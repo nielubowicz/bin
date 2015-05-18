@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Deletes all merged branches except the current branch
+git branch --merged | while read -r b; do 
+if [[ "$b" =~ '* ' ]]; then
+    echo "Skipping: $b"
+elif [[ "$b" =~ '  (master|dev|develop|development|staging)' ]]; then
+    echo "Skipping: $b"
+else 
+    printf "Delete $b: (y/n)? "
+    read -n 1 choice </dev/tty
+    shopt -s nocasematch
+    if echo $choice | grep -i 'y'; then
+        printf "*******"
+        git branch -d $b 
+    else
+        echo ""
+    fi
+fi
+done
