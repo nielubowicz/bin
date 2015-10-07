@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Copies the current remote to the clipboard
+git remote -v | awk -F ' ' '{print $2}' | uniq | tr -d '\n' | pbcopy
