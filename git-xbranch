@@ -1,7 +1,23 @@
 #!/bin/sh
 
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+forced="--merged"
+
+while getopts "h?f" opt; do
+    case "$opt" in
+    h|\?)
+        show_help
+        exit 0
+    ;;
+    f)  forced=""
+    ;;
+esac
+done
+
 # Deletes all merged branches except the current branch
-git branch --merged | while read -r b; do 
+git branch $forced | while read -r b; do 
 if [[ "$b" =~ '* ' ]]; then
     echo "Skipping: $b"
 elif [[ "$b" =~ '  (master|dev|develop|development|staging)' ]]; then
@@ -12,7 +28,11 @@ else
     shopt -s nocasematch
     if echo $choice | grep -i 'y'; then
         printf "*******"
-        git branch -d $b 
+        if [ -z "$forced" ]; then
+            git branch -D $b
+        else 
+            git branch -d $b 
+        fi
     else
         echo ""
     fi
