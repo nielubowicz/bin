@@ -1,0 +1,25 @@
+#!/bin/sh
+
+TEMP=`/usr/local/Cellar/gnu-getopt/1.1.6/bin/getopt -o p:: --long parent:: -- "$@"`
+
+if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+eval set -- "$TEMP"
+
+# extract options and their arguments into variables.
+while true ; do
+    case "$1" in
+    -p | --parent) 
+        case "$2" in
+            "") PARENT=1; shift 2 ;;
+            *) PARENT=$2; shift 2 ;; 
+        esac ;;
+    * ) break ;;
+  esac
+done
+
+# Copies the current branch to the clipboard
+HEAD=$(git rev-parse --abbrev-ref HEAD)
+echo $HEAD | tr -d '\n' | pbcopy
+if [[ $PARENT -gt 0 ]]; then
+  git show-branch | grep '*' | grep -v "${HEAD}" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//' | tr -d '\n' | pbcopy
+fi
