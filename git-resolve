@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# get a list of all conflicted file names, returned with enclosing-quotes 
+conflicted_files=$(git status --porcelain | grep 'UU' | awk '{print "\""$2"\""}')
+for file in $conflicted_files
+do
+    # open each conflicted file in vim
+    echo $file | xargs -o vim
+    # ask user to commit file
+    printf "Commit $file: (y/n)? "
+    read -n 1 choice </dev/tty
+    shopt -s nocasematch
+    if echo $choice | grep -i 'y'; then
+        echo $file | xargs -o git add
+    fi
+done 
+
+git status
+echo "☢🚀  Don't forget to commit the results! ☢🚀 "
