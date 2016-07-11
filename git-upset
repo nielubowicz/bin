@@ -1,0 +1,10 @@
+#! /bin/sh
+
+git-bcopy
+BRANCH=$(pbpaste)
+
+if [[ -z "$BRANCH" ]]; then
+    exit 1
+fi
+
+git branch --set-upstream-to=origin/${BRANCH} $BRANCH
