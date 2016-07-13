@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # get a list of all conflicted file names, returned with enclosing-quotes 
-conflicted_files=$(git status --porcelain | grep 'UU' | awk '{print "\""$2"\""}')
+conflicted_files=$(git status --porcelain | grep 'UU\|AA' | sed -e 's/UU //g' -e 's/AA //g')
 for file in $conflicted_files
 do
     # open each conflicted file in vim
