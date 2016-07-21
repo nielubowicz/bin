@@ -1,11 +1,14 @@
 #!/bin/sh
 
 # get a list of all conflicted file names, returned with enclosing-quotes 
-conflicted_files=$(git status --porcelain | grep 'UU\|AA' | sed -e 's/UU //g' -e 's/AA //g')
-for file in $conflicted_files
+conflicted_files=$(git status --porcelain | grep 'UU\|AA' | sed -e 's/UU //g' -e 's/AA //g' | awk '{print "\""$0"\""}')
+for ((i = 0; i < ${#conflicted_files[@]}; i++))
 do
+    file="${conflicted_files[$i]}"
+
     # open each conflicted file in vim
     echo $file | xargs -o vim
+
     # ask user to commit file
     printf "Commit $file: (y/n)? "
     read -n 1 choice </dev/tty
