@@ -1,0 +1,38 @@
+#!/bin/sh
+
+OLD=$1
+NEW=$2
+
+if [ -z "$OLD" ]
+then
+  echo "First parameter should be old name" 1>&2 
+  exit 1
+fi
+
+if [ -z "$NEW" ]
+then
+  echo "Second parameter should be new name" 1>&2
+  exit 2
+fi
+
+if [ "$OLD" = "$NEW" ]
+then
+  echo "Names should not be the same" 1>&2
+  exit 3
+fi
+
+cp -r  "${OLD}" "${NEW}"
+
+cd "${NEW}"
+
+{ 
+    mv "${OLD}.pro" "${NEW}.pro" 
+    mv "${OLD}.kicad_pcb" "${NEW}.kicad_pcb"
+    mv "${OLD}.net" "${NEW}.net"
+    mv "${OLD}.sch" "${NEW}.sch"
+    mv "${OLD}-cache.lib" "${NEW}-cache.lib"
+    mv "${OLD}.cmp" "${NEW}.cmp"
+} 2> /dev/null
+
+grep -rl '${OLD}' ./ | xargs sed -e -i bak "s/${OLD}/${NEW}/g"
+rm *bak
